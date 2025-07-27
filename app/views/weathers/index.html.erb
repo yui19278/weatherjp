@@ -5,10 +5,10 @@
 <p> todo : 日付どこで取得する？</p>
 
 <% if @weather %>
-    <p><%= @weather['description'] %></p>
-    <p>最高: <%= @weather['temp_max'] %>℃</p>
-    <p>最低: <%= @weather['temp_min'] %>℃</p
-    <p>湿度: <%= @weather['humidity'] %>%</p>
+    <p><%= @weather[:description] %></p>
+    <p>最高: <%= @weather[:temp_max] %>℃</p>
+    <p>最低: <%= @weather[:temp_min] %>℃</p
+    <p>湿度: <%= @weather[:humidity] %>%</p>
 <% else %>
     <p>天気情報が見つかりませんでした。</p> <%# 本来は出ないエラー(APIがおかしくない限り) %>
 <% end %>

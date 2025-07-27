@@ -1,16 +1,26 @@
 class WeathersController < ApplicationController 
-  # indexで空白エラーを先に通知 
-  before_action :validate_location, only: [:index]
   def new
   end
 
   def index
+    # 空白検索時はリダイレクト
+    return if params[:location].blank?
+
     @location = params[:location]
     # WeatherServiceを呼び出して天気情報を取得
     response = WeathersService.new.fetch_weather(@location)
+
+    # debug log表示
+    Rails.logger.debug "===== OpenWeatherMap Response START ====="
+    Rails.logger.debug response.body # 生のレスポンスボディを確認
+    Rails.logger.debug "===== OpenWeatherMap Response END ====="
+    Rails.logger.info "OWM status=#{response.status} ct=#{response.headers['content-type']} body.class=#{response.body.class}"
+    Rails.logger.info "Faraday v#{Faraday::VERSION}"
     
     if response.success?
-      weather_data = response.parsed_response
+      weather_data = response.body 
+      # string→json変換御まじない
+      weather_data = JSON.parse(weather_data) if weather_data.is_a?(String)
       # APIレスポンスの確認
       if weather_data["weather"] && weather_data["main"]
         @weather = {
@@ -30,11 +40,5 @@ class WeathersController < ApplicationController
   end
 
   private
-
-  def validate_location
-    if params[:location].blank?
-      flash[:alert] = "地域名を入力してください。"
-      redirect_to root_path
-    end
-  end
+  
 end

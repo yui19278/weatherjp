@@ -1,4 +1,5 @@
 require 'faraday'
+require "faraday/retry"
 
 class WeathersService
   def call
@@ -7,7 +8,12 @@ class WeathersService
 
   def initialize()
     @api_key = ENV["OPENWEATHER_API_KEY"]
-    @connection = Faraday.new(url:  "https://api.openweathermap.org")
+    # Faradayの接続設定
+    @connection = Faraday.new(url:  "https://api.openweathermap.org") do |f|
+        f.request  :retry, max: 2, interval: 0.2, backoff_factor: 2, retry_statuses: [429, 500, 502, 503, 504]
+        f.response :json, :content_type => /\bjson$/ # 正規表現でparse
+        f.adapter Faraday.default_adapter
+    end
   end
 
   # 現在の天気
