@@ -76,3 +76,48 @@ https://qiita.com/enzen/items/14271ec8fdf01107d1ce
   - 環境変数
 - pry-rails
   - デバッグ
+
+## 開発
+
+### 所感
+
+- MVC 開発を心掛けた contoller(今ココ) -> view 分離 -> model
+- 開発をはじめてから rails の記法を学び，後から service 層を作って分割した　次は設計段階でディレクトリ構成まで考えたい
+- API リクエストのエラーハンドリング想定が甘かった リク失敗は考慮，リク成功 → データ形式ミス は考えていなかった
+- 数日後予報が無料 API だとめんどくさそうなので当日の天気だけを検索する実装として妥協した　事前の API 情報収集不足である
+- RESTful な Web アプリを作るうえで，/weather は show より index の方が適切 途中で show→index に切り替えた
+- API リクエストでハマった 環境変数名前違い, api キー間違え ←!?, 引数不一致で受け取れない, パースできない, faraday-retry 追加(v2 から仕様が変わっていた), ビューで呼び出すキーが違った
+
+### 参考
+
+https://qiita.com/foot_raming/items/a0c9951365e41d66dac8
+form-label の使い方
+
+https://qiita.com/rk2530/items/8fdf6807e4f7cc33afbd
+openweatherAPI で都市の気象データを取得している
+
+https://qiita.com/sibakenY/items/cf44a2d79dae9f6443f0
+service に分割している様子
+
+https://guides.rubyonrails.org/routing.html
+routes から path 生成
+
+https://qiita.com/kidach1/items/43e53811c12351915278
+RESTful とルーティング
+
+https://nekorails.hatenablog.com/entry/2018/09/28/152745
+faraday 使い方
+
+```
+connection = Faraday.new("http://example.com")
+connection.params[:page] = 2
+connection.get("/cats")
+```
+
+https://qiita.com/Masashi9410/items/16ce1c6da64eae497615
+erb コメントアウト
+
+https://qiita.com/t_t238/items/591cd44d89560b72154a
+json / parse について
+
+f.response :json, content_type: /json/ # 規定/\bjson$/から applicatiom/jspn, charset=utf=8 へ緩める
