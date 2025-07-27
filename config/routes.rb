@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-    root 'weathers#new'
-    post '/weathers', to: 'weathers#create'
-    get '/weathers/:id', to: 'weathers#show', as: 'weathers_show'
-    # root 'application#hello'
+  # 検索画面
+  root "weather#new"
+  # 検索地域画面
+  get "/weather", to: "weather#show"
 end
