@@ -61,3 +61,4 @@ end
 
 gem "faraday"
 gem "pry-rails"
+gem "dotenv-rails"
