@@ -60,5 +60,6 @@ group :test do
 end
 
 gem "faraday"
+gem "faraday-retry"
 gem "pry-rails"
 gem "dotenv-rails"
