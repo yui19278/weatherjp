@@ -65,5 +65,14 @@ https://qiita.com/enzen/items/14271ec8fdf01107d1ce
 
 ### エンドポイント
 
-/, GET, 検索ページを表示
+/, GET, 検索ページを表示  
 /weather, GET, 検索を行い結果を表示
+
+### gem
+
+- faraday
+  - http クライアント
+- dotenv-rails
+  - 環境変数
+- pry-rails
+  - デバッグ
