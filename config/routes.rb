@@ -2,5 +2,5 @@ Rails.application.routes.draw do
   # 検索画面
   root "weathers#new"
   # 検索地域画面
-  get "/weathers", to: "weathers#show"
+  get "/weathers", to: "weathers#index", as: "weathers_index" # as: :weathers_indexよりweathers_pathが生成される？
 end

@@ -1,19 +1,18 @@
-require "httparty"
-require "uri"
-
-class WeathersController < ApplicationController
+class WeathersController < ApplicationController 
+  # indexで空白エラーを先に通知 
+  before_action :validate_location, only: [:index]
   def new
   end
 
-  def show
+  def index
     @location = params[:location]
     # WeatherServiceを呼び出して天気情報を取得
-    response = WeatherService.new(@location).fetch_weather
+    response = WeathersService.new.fetch_weather(@location)
     
     if response.success?
       weather_data = response.parsed_response
       # APIレスポンスの確認
-      if weahter_data["weather"] && weather_data["main"]
+      if weather_data["weather"] && weather_data["main"]
         @weather = {
           name: weather_data["name"],
           description: weather_data["weather"].first["description"],
@@ -31,31 +30,11 @@ class WeathersController < ApplicationController
   end
 
   private
+
   def validate_location
     if params[:location].blank?
-      flash[:alert] = "入力が不正です。"
+      flash[:alert] = "地域名を入力してください。"
       redirect_to root_path
     end
-end
-
-class WeatherService
-  include HTTParty
-  base_uri "https://api.openweathermap.org/data/2.5/weather"
-
-  def initialize(location)
-    @api_key = ENV["OPENWEATHER_API_KEY"]
-    @location = location
-  end
-
-  def fetch_weather
-      options = {
-        query: {
-          q: "#{@location},jp",
-          appid: @api_key,
-          lang: "ja",
-          units: "metric" # 摂氏
-        }
-      }
-    seld.class.get("", options) # base_uriをどこまで切ればよいか分からない
   end
 end
