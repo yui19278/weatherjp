@@ -66,7 +66,7 @@ https://qiita.com/enzen/items/14271ec8fdf01107d1ce
 ### エンドポイント
 
 /, GET, 検索ページを表示  
-/weather, GET, 検索を行い結果を表示
+/weathers, GET, 検索を行い結果を表示
 
 ### gem
 
