@@ -88,6 +88,7 @@ https://qiita.com/enzen/items/14271ec8fdf01107d1ce
 - RESTful な Web アプリを作るうえで，/weather は show より index の方が適切 途中で show→index に切り替えた
 - API リクエストでハマった 環境変数名前違い, api キー間違え ←!?, 引数不一致で受け取れない, パースできない, faraday-retry 追加(v2 から仕様が変わっていた), ビューで呼び出すキーが違った
 - 同じブランチで controller と view を開発してしまった 次は気を付ける
+- 曜日表示が gem でできるとは 便利だ
 
 ### 参考
 
@@ -122,3 +123,6 @@ https://qiita.com/t_t238/items/591cd44d89560b72154a
 json / parse について
 
 f.response :json, content_type: /json/ # 規定/\bjson$/から applicatiom/jspn, charset=utf=8 へ緩める
+
+https://qiita.com/shimadama/items/7e5c3d75c9a9f51abdd5
+曜日入れるために日本語対応
