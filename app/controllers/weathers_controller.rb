@@ -17,14 +17,19 @@ class WeathersController < ApplicationController
     Rails.logger.debug "===== OpenWeatherMap Response END ====="
     Rails.logger.info "OWM status=#{response.status} ct=#{response.headers['content-type']} body.class=#{response.body.class}"
     Rails.logger.info "Faraday v#{Faraday::VERSION}"
-
-    # 履歴の保存 todo サービスに移動
-    token = cookies.signed[:user_token]
-    SearchHistory.record!(user_token: token, location: @location)
-    SearchHistory.limit_to_five!(user_token: token, limit: 5)
-    @histories = SearchHistory.where(user_token: token).recent
+    
+    Rails.logger.debug "===== user_token START ====="
+    Rails.logger.info "user_token=#{cookies.signed[:user_token].inspect}"
+    Rails.logger.debug "===== user_token END ====="
     
     if response.success?
+
+      # 履歴の保存 todo サービスに移動
+      token = cookies.signed[:user_token]
+      SearchHistory.record!(user_token: token, location: @location)
+      SearchHistory.limit_to_five!(user_token: token, limit: 5)
+      @histories = SearchHistory.where(user_token: token).recent
+
       weather_data = response.body 
       # string→json変換御まじない
       weather_data = JSON.parse(weather_data) if weather_data.is_a?(String)

@@ -9,14 +9,16 @@ class ApplicationController < ActionController::Base
 
   private
   def ensure_user_token
-    return if session[:user_token].present?
+    return if cookies.signed[:user_token].present?
 
+    new_user_token = SecureRandom.uuid
     cookies.signed[:user_token] = {
-      value: SecureRandom.uuid,
+      value: new_user_token,
       expires: 20.years.from_now,
       httponly: true,
       secure: Rails.env.production?,
       same_site: :lax,
     }
+    Rails.logger.info "[ensure_user_token] issued=#{new_user_token} host=#{request.host}"
   end
 end  
