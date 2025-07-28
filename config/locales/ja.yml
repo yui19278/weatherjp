@@ -1,0 +1,4 @@
+ja:
+  date:
+    formats:
+      month_to_day: "%-m月%-d日(%a)"

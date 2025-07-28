@@ -60,4 +60,7 @@ group :test do
 end
 
 gem "faraday"
+gem "faraday-retry"
 gem "pry-rails"
+gem "dotenv-rails"
+gem "rails-i18n", "~> 7.0"
