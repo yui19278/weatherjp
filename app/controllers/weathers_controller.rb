@@ -9,7 +9,7 @@ class WeathersController < ApplicationController
 
     @location = params[:location]
     # WeatherServiceを呼び出して天気情報を取得
-    response = WeathersService.new.fetch_weather(@location)
+    response = WeathersService.new(@location).call
 
     # debug log表示
     Rails.logger.debug "===== OpenWeatherMap Response START ====="

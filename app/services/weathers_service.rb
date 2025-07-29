@@ -1,12 +1,11 @@
 require 'faraday'
 require "faraday/retry"
 
+# 指定された地名の天気情報を取得する
 class WeathersService
-  def call
-    # todo 後で下の内容をcallに移動
-  end
 
-  def initialize()
+  def initialize(location)
+    @location = location
     @api_key = ENV["OPENWEATHER_API_KEY"]
     # Faradayの接続設定
     @connection = Faraday.new(url:  "https://api.openweathermap.org") do |f|
@@ -16,10 +15,9 @@ class WeathersService
     end
   end
 
-  # 現在の天気
-  def fetch_weather(location)
+  def call
     @connection.get("/data/2.5/weather") do |req|
-      req.params[:q] = "#{location},jp"
+      req.params[:q] = "#{@location},jp"
       req.params[:appid] = @api_key
       req.params[:lang] = "ja"
       req.params[:units] = "metric" # 摂氏
