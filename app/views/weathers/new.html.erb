@@ -3,4 +3,10 @@
     <%= form.label :location, "地域名を入力してください" %>
     <%= form.text_field :location, placeholder: "例: 足立区" %>
     <%= form.submit "検索" %>
+
+    <datalist id="recent-locations">
+        <% Array(@histories).each do |history| %>
+            <option value="<%= history.location %>"></option>
+        <% end %>
+    </datalist>
 <% end %> 

@@ -1,4 +1,5 @@
 class WeathersController < ApplicationController 
+  before_action :load_histories, only: [:index, :new]
   def new
   end
 
@@ -8,7 +9,7 @@ class WeathersController < ApplicationController
 
     @location = params[:location]
     # WeatherServiceを呼び出して天気情報を取得
-    response = WeathersService.new.fetch_weather(@location)
+    response = WeathersService.new(@location).call
 
     # debug log表示
     Rails.logger.debug "===== OpenWeatherMap Response START ====="
@@ -17,7 +18,18 @@ class WeathersController < ApplicationController
     Rails.logger.info "OWM status=#{response.status} ct=#{response.headers['content-type']} body.class=#{response.body.class}"
     Rails.logger.info "Faraday v#{Faraday::VERSION}"
     
+    Rails.logger.debug "===== user_token START ====="
+    Rails.logger.info "user_token=#{cookies.signed[:user_token].inspect}"
+    Rails.logger.debug "===== user_token END ====="
+    
     if response.success?
+
+      # 履歴の保存 todo サービスに移動
+      token = cookies.signed[:user_token]
+      SearchHistory.record!(user_token: token, location: @location)
+      SearchHistory.limit_to_five!(user_token: token, limit: 5)
+      @histories = SearchHistory.where(user_token: token).recent
+
       weather_data = response.body 
       # string→json変換御まじない
       weather_data = JSON.parse(weather_data) if weather_data.is_a?(String)
@@ -40,5 +52,13 @@ class WeathersController < ApplicationController
   end
 
   private
-  
+  def load_histories
+    token = cookies.signed[:user_token]
+    @histories = 
+      if token.present?
+        SearchHistory.where(user_token: token).recent
+      else
+        []
+      end
+  end
 end
