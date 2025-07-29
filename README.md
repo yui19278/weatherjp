@@ -3,6 +3,10 @@
 https://qiita.com/enzen/items/14271ec8fdf01107d1ce
 を参考にして設計 → 開発を行う
 
+# 現在公開中！
+
+https://tenki.yui19278.com
+
 ## アプリ作成動機
 
 メモ帳アプリの写経を終えて　次は外部 API を使用した簡易アプリの作成  
@@ -90,6 +94,51 @@ https://qiita.com/enzen/items/14271ec8fdf01107d1ce
 - 同じブランチで controller と view を開発してしまった 次は気を付ける
 - 曜日表示が gem でできるとは 便利だ
 
+二日目
+
+- DB 設計も設計の段階でできるな
+- DB を作るために cokkie の仕様について調べる　二種類あるらしい　今回は永続 cokkie を使う
+  動作イメージ
+
+1. ユーザが remember me にチェックを入れて検索する
+2. 記憶トークンを生成する
+3. ブラウザ cokkies に記憶トークンと地域名を保存（user_token, location)
+4. トークンをハッシュ化して DB へ保存
+5. ユーザが再びアクセスした際，アプリが cookies に保存されたトークンを受け取る
+6. DB にあるトークンと cookies から渡されたトークンが一致するか確認
+7. 一致したら検索履歴欄に地域名を渡す
+   DB モデル名は seachHistory[user_token string, location string]
+   作成結果
+   search_histories  
+   id integer  
+   user_token varchar  
+   location varchar  
+   created_at datetime
+   updated_at datetime
+
+- マイグレーション調整(user_token nullfalse, location nullfalse)も事前に設計できた
+  同じ usertoken で同じ地点を二か所登録できないように
+
+```
+add_index :search_histories, [:user_token, :location], unique: true
+```
+
+- 次は issue 作って稼働したい
+  search_histories.yml にテスト書いて動作確認
+- 昨日は MCV それぞれでブランチを作ろうとしていたが，issue 事にブランチ作ってそこで mcv すべて作ってしまうほうが効率がよさそうだ
+- @histories(nil)で読んでエラー -> before actions
+- 保存の際に 1 つの引数しか渡せていない
+  token = "ce620e21-a2d1-4985-9378-dda2b75982c8"
+  SearchHistory.where(user_token: token).order(updated_at: :desc).limit(5).pluck(:location, :updated_at)
+- token を二重発行してる？
+- token 判定を session で行っていた
+  token = "5bdc0f56-506c-4253-ae9e-9a711467e568"
+  => "ce620e21-a2d1-4985-9378-dda2b75982c8"
+- 実装できた 検索結果が見つからない場合保存しないことを考慮していなかった -> if の中に移動
+- 履歴保存箇所がきれいにサービス分離できなかった為削除　これも次回の事前設計に回す
+- 戻るで戻った場合に履歴が更新されない問題
+- 次への練習として，最後のビューの手直しは issue 稼働を行う．
+
 ### 参考
 
 https://qiita.com/foot_raming/items/a0c9951365e41d66dac8
@@ -127,37 +176,8 @@ f.response :json, content_type: /json/ # 規定/\bjson$/から applicatiom/jspn,
 https://qiita.com/shimadama/items/7e5c3d75c9a9f51abdd5
 曜日入れるために日本語対応
 
-### 所感＆リンク　つづき
-
-今日はモデルから
-
-- DB 設計も設計の段階でできるな
-
-DB を作るために cokkie の仕様について調べる　二種類あるらしい　今回は永続 cokkie を使う
 https://plog.kobacchi.com/rails-remember-me-by-cookie/
 Cokkie を使ってログイン状態を保持する
-
-動作イメージ
-
-1. ユーザが remember me にチェックを入れて検索する
-2. 記憶トークンを生成する
-3. ブラウザ cokkies に記憶トークンと地域名を保存（user_token, location)
-4. トークンをハッシュ化して DB へ保存
-5. ユーザが再びアクセスした際，アプリが cookies に保存されたトークンを受け取る
-6. DB にあるトークンと cookies から渡されたトークンが一致するか確認
-7. 一致したら検索履歴欄に地域名を渡す
-
-DB モデル名は seachHistory[user_token string, location string]
-
-作成結果
-search_histories  
-id integer  
-user_token varchar  
-location varchar  
-created_at datetime
-updated_at datetime
-
-- マイグレーション調整(user_token nullfalse, location nullfalse)も事前に設計できた
 
 https://qiita.com/kimascript/items/d718e5cdd629af3fe6a0
 rails テーブル削除
@@ -167,14 +187,6 @@ https://zenn.dev/atsumu22/articles/69173f1cb5e880
 
 https://qiita.com/Chiba_67/items/8af392db90f5d1d9a5c5
 一意制約(2)
-
-同じ usertoken で同じ地点を二か所登録できないように
-
-```
-add_index :search_histories, [:user_token, :location], unique: true
-```
-
-- 次は issue 作って稼働したい
 
 https://qiita.com/akinov/items/852fe789fe98a44350a9
 後から null
@@ -188,30 +200,5 @@ asociated の使い方がいまいちわからない
 https://qiita.com/coe401_/items/ad7dc2f3e319c5beaf40
 ruby cokkies 実装について
 
-search_histories.yml にテスト書いて動作確認
-
-- 昨日は MCV それぞれでブランチを作ろうとしていたが，issue 事にブランチ作ってそこで mcv すべて作ってしまうほうが効率がよさそうだ
-- @histories(nil)で読んでエラー -> before actions
-- 保存の際に 1 つの引数しか渡せていない
-
-token = "ce620e21-a2d1-4985-9378-dda2b75982c8"
-SearchHistory.where(user_token: token).order(updated_at: :desc).limit(5).pluck(:location, :updated_at)
-
-- token を二重発行してる？
-  https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie
-  cokkie の挙動
-
-- token 判定を session で行っていた
-  token = "5bdc0f56-506c-4253-ae9e-9a711467e568"
-  => "ce620e21-a2d1-4985-9378-dda2b75982c8"
-
-- 実装できた 検索結果が見つからない場合保存しないことを考慮していなかった -> if の中に移動
-- 履歴保存箇所がきれいにサービス分離できなかった為削除　これも次回の事前設計に回す
-- 戻るで戻った場合に履歴が更新されない問題
-- 次への練習として，最後のビューの手直しは issue 稼働を行う．
-
-計画
-CI が落ちている問題の解決
-/weather に他地域を検索するボタンの実装
-/weather にトップに戻るボタンの実装
-readme の整理
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie
+cokkie の挙動
