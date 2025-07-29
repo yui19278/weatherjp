@@ -36,3 +36,4 @@
 
 # .drawio files
 *.drawio
+/config/credentials/production.key
