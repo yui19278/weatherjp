@@ -21,6 +21,8 @@ class WeathersController < ApplicationController
     Rails.logger.debug "===== user_token START ====="
     Rails.logger.info "user_token=#{cookies.signed[:user_token].inspect}"
     Rails.logger.debug "===== user_token END ====="
+
+    # result = WeathersSearchService.new(@location).call
     
     if response.success?
 
