@@ -3,10 +3,19 @@
     <%= form.label :location, "地域名を入力してください" %>
     <%= form.text_field :location, placeholder: "例: 足立区" %>
     <%= form.submit "検索" %>
+<% end %>
 
-    <datalist id="recent-locations">
-        <% Array(@histories).each do |history| %>
-            <option value="<%= history.location %>"></option>
+<% if @histories.present? %>
+    <h2>最近の検索履歴</h2>
+    <ul>
+        <% @histories.each do |history| %>
+            <li><%= link_to history.location, weathers_path(location: history.location) %></li>
         <% end %>
-    </datalist>
-<% end %> 
+    </ul>
+<% end %>
+
+<datalist id="recent-locations">
+    <% Array(@histories).each do |history| %>
+        <option value="<%= history.location %>"></option>
+    <% end %>
+</datalist>
